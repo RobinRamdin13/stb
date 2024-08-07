@@ -55,7 +55,7 @@ def get_lineplots(x:str, y:str, hue:str, data:DataFrame, x_label:str, y_label:st
     plt.grid() # create the grid
     plt.tight_layout()
     name = re.sub(r'[\s]', '_', title.lower()) # instantiate the plot name
-    plt.savefig(join(plot_path, name+'.jpeg')) # save the plot
+    plt.savefig(join(plot_path, name+'.jpeg'), dpi=1200) # save the plot
     plt.close() # close the plot
     return
 
@@ -111,12 +111,12 @@ def main(data_path: str, plot_path:str)-> None:
               y_label='Expenditure', title= 'Countries with Most Total Expendidutre',plot_path=plot_path)
     
     df_countries_pie = df_countries[['country_of_residence', 'tot.exp']].groupby('country_of_residence').sum()
-    plt.figure(figsize=(15,15), dpi=400)
+    plt.figure(figsize=(10,10))
     df_countries_pie.plot(kind='pie', y='tot.exp', autopct='%1.0f%%', legend=False)
     plt.ylabel('')
     plt.title('Countries with Most Total Expenditure', **title_prop)
     plt.tight_layout()
-    plt.savefig(join(plot_path, 'countries_with_most_expenditure_pie'+'.jpeg'))
+    plt.savefig(join(plot_path, 'countries_with_most_expenditure_pie'+'.jpeg'), dpi=1200)
     plt.close()
 
     # create groupby for expenditure per month
@@ -131,14 +131,14 @@ def main(data_path: str, plot_path:str)-> None:
 
     # create groupby for each expenditure type 
     temp_labels = [exp_dict.get(key) for key in df[exp_cols].sum().index.tolist()]
-    plt.figure(figsize=(10,10), dpi=400)
+    plt.figure(figsize=(10,10))
     df[exp_cols].sum().plot(kind='pie', y='', autopct='%1.0f%%', legend=False, labels=temp_labels, 
                             labeldistance=None, explode=(0, 0, 0, 0, 0.3, 0.5, 0, 0))
     plt.ylabel('')
     plt.title('Expenditure Breakdown', **title_prop)
     plt.legend(title='Legend')
     plt.tight_layout()
-    plt.savefig(join(plot_path, 'expenditure_breakdown'+'.jpeg'))
+    plt.savefig(join(plot_path, 'expenditure_breakdown'+'.jpeg'), dpi=1200)
     plt.close()
 
     # create groupby for lenght of stays 
