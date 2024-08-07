@@ -1,7 +1,6 @@
 import os 
 import re
 import math
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -9,6 +8,7 @@ import matplotlib.pyplot as plt
 from pandas import DataFrame
 from os.path import join, isdir
 
+# global variables for the plot parameters
 label_prop = {'weight':'bold', 'fontsize':12}
 title_prop = {'weight':'bold', 'fontsize':14}
 
@@ -24,21 +24,41 @@ def rename_cols(col:str)->str:
     return re.sub(r'_-_', '_', re.sub(r'[\s]|[\/]', '_', col.lower()))
 
 def get_lineplots(x:str, y:str, hue:str, data:DataFrame, x_label:str, y_label:str, title:str, plot_path:str)-> None:
-    plt.figure(figsize=(15, 10))
-    sns.lineplot(x=x, y=y, data=data, hue=hue, marker="o", markersize=10)
-    plt.xlabel(x_label, **label_prop)
-    plt.ylabel(y_label, **label_prop)
-    plt.title(title, **title_prop)
-    plt.legend(prop={'size':12})
-    plt.grid()
+    """Function to generate line plot in seaborn
+
+    Args:
+        x (str): x-variable
+        y (str): y-variable
+        hue (str): hue variable
+        data (DataFrame): data dataframe
+        x_label (str): x label
+        y_label (str): y label
+        title (str): plot title 
+        plot_path (str): plot path
+    """    
+    plt.figure(figsize=(15, 10)) # isntantiate the figure size
+    sns.lineplot(x=x, y=y, data=data, hue=hue, marker="o", markersize=10) # create the line plo t
+    plt.xlabel(x_label, **label_prop) # set the x label
+    plt.ylabel(y_label, **label_prop) # set the y label
+    plt.title(title, **title_prop) # set the plot title 
+    plt.legend(title='Legend',prop={'size':12}) # set the legend dimension
+    plt.grid() # create the grid
     plt.tight_layout()
-    name = re.sub(r'[\s]', '_', title.lower())
-    plt.savefig(join(plot_path, name+'.jpeg'))
-    plt.close()
+    name = re.sub(r'[\s]', '_', title.lower()) # instantiate the plot name
+    plt.savefig(join(plot_path, name+'.jpeg')) # save the plot
+    plt.close() # close the plot
     return
 
 def main(data_path: str, plot_path:str)-> None: 
     def change_transport(x):
+        """Function to aggregate the transport data into one column
+
+        Args:
+            x (DataFrame): row data from dataframe
+
+        Returns:
+            str/None: returns string if criteria is met otherwise None
+        """        
         if not math.isnan(x.air_terminal): 
             return 'air'
         elif type(x.sea_terminal)==str: 
