@@ -11,6 +11,16 @@ from os.path import join, isdir
 # global variables for the plot parameters
 label_prop = {'weight':'bold', 'fontsize':12}
 title_prop = {'weight':'bold', 'fontsize':14}
+exp_dict = {
+    'totacc' : 'Accommodation Spend',
+    'totfnb' : 'F&B Spend',
+    'tottran' : 'Transport Spend',
+    'totbiz' : 'Business Spend',
+    'totedu' : 'Education Spend',
+    'totmedi' : 'Other medical spend',
+    'tototh' : 'Other services spend',
+    'totshopping_rep' : 'Shopping Spend'
+}
 
 def rename_cols(col:str)->str:
     """Function to rename columns 
@@ -90,7 +100,6 @@ def main(data_path: str, plot_path:str)-> None:
         df['tot.exp'] = df_exp_tot
     
     # create new transport feature 
-    # print(df.columns.tolist())
     df['transport'] = df.apply(lambda x: change_transport(x), axis=1)
     df.drop(columns=['air_terminal', 'sea_terminal', 'land_terminal'], inplace=True)
     
@@ -120,6 +129,21 @@ def main(data_path: str, plot_path:str)-> None:
     get_lineplots(x='month', y='totbiz', hue='transport', data=df[['month', 'totbiz', 'transport']], x_label='Months',
                   y_label='Business Expenditure', title='Mean Business Expenditure Over Time', plot_path=plot_path)
 
+    # create groupby for each expenditure type 
+    temp_labels = [exp_dict.get(key) for key in df[exp_cols].sum().index.tolist()]
+    plt.figure(figsize=(10,10), dpi=400)
+    df[exp_cols].sum().plot(kind='pie', y='', autopct='%1.0f%%', legend=False, labels=temp_labels, 
+                            labeldistance=None, explode=(0, 0, 0, 0, 0.3, 0.5, 0, 0))
+    plt.ylabel('')
+    plt.title('Expenditure Breakdown', **title_prop)
+    plt.legend(title='Legend')
+    plt.tight_layout()
+    plt.savefig(join(plot_path, 'expenditure_breakdown'+'.jpeg'))
+    plt.close()
+
+    # create groupby for lenght of stays 
+    get_lineplots(x='month', y='length_of_stay', hue='purpose_of_visit', data=df[['month', 'length_of_stay', 'purpose_of_visit']],
+                  x_label='Months', y_label='Length of Stay', title='Lenght of Stay By Purpose', plot_path=plot_path)
     return
 
 if __name__ == '__main__':
